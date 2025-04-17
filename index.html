@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky Number Picker</title>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --success: #4cc9f0;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            max-width: 550px;
+            width: 100%;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 28px;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        h1:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background-color: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 15px;
+            color: var(--dark);
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+        
+        input::placeholder {
+            color: #adb5bd;
+        }
+        
+        .input-error {
+            border-color: var(--accent);
+        }
+        
+        .error-message {
+            color: var(--accent);
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        button {
+            background-color: var(--primary);
+            border: none;
+            border-radius: var(--border-radius);
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 14px;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .user-info {
+            background-color: #f0f4ff;
+            border-radius: var(--border-radius);
+            padding: 15px 20px;
+            margin-bottom: 25px;
+        }
+        
+        .user-info p {
+            margin: 8px 0;
+            font-size: 15px;
+        }
+        
+        .user-info span.label {
+            font-weight: 600;
+            color: var(--primary);
+            margin-right: 5px;
+        }
+        
+        .random-number {
+            text-align: center;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--primary);
+            background: linear-gradient(135deg, #eef2ff 0%, #e6f0ff 100%);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+            box-shadow: 0 5px 10px rgba(67, 97, 238, 0.1);
+        }
+        
+        .instruction {
+            text-align: center;
+            margin: 20px 0;
+            color: var(--gray);
+            font-weight: 500;
+            font-size: 16px;
+        }
+        
+        .boxes-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin: 25px 0;
+        }
+        
+        .box {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark);
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .box:hover {
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            border-color: var(--primary);
+            transform: scale(1.05);
+            box-shadow: 0 8px 15px rgba(67, 97, 238, 0.2);
+        }
+        
+        .box.selected {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-color: var(--primary-dark);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.4);
+        }
+        
+        .product-reveal {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 25px;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            background: linear-gradient(135deg, #f0f4ff 0%, #e6f0ff 100%);
+            box-shadow: var(--box-shadow);
+            transition: all 0.5s;
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .product-reveal.hidden {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        
+        .product-image-container {
+            width: 100%;
+            max-width: 250px;
+            height: 200px;
+            overflow: hidden;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        
+        .product-image-container:hover .product-image {
+            transform: scale(1.05);
+        }
+        
+        .product-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .product-description {
+            text-align: center;
+            color: var(--gray);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .admin-panel {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .admin-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+        
+        .admin-panel button {
+            background-color: var(--gray);
+            margin-top: 0;
+        }
+        
+        .admin-panel button:hover {
+            background-color: #5a6268;
+        }
+        
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .boxes-container {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+            
+            .box {
+                font-size: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .random-number {
+                font-size: 22px;
+            }
+        }
+        
+        /* Animation */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+        
+        /* Confetti effect */
+        .confetti-container {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            pointer-events: none;
+            z-index: 999;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f72585;
+            border-radius: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="confetti-container" id="confetti-container"></div>
+    <div class="container">
+        <h1>Lucky Number Picker</h1>
+        
+        <div id="form-section">
+            <div class="form-group">
+                <label for="name">Your Name</label>
+                <input type="text" id="name" placeholder="Enter your full name" required>
+                <div class="error-message" id="name-error">Please enter your name</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Your Phone Number</label>
+                <input type="tel" id="phone" placeholder="Enter 10 digit phone number" maxlength="10" required>
+                <div class="error-message" id="phone-error">Please enter a valid 10-digit phone number</div>
+            </div>
+            
+            <button id="generate-btn">Generate My Lucky Number</button>
+        </div>
+        
+        <div id="result-section" class="hidden">
+            <div class="user-info">
+                <p><span class="label">Name:</span> <span id="display-name"></span></p>
+                <p><span class="label">Phone Number:</span> <span id="display-phone"></span></p>
+            </div>
+            
+            <div class="random-number pulse" id="random-number"></div>
+            
+            <p class="instruction">Click on the box with your lucky number to reveal your prize!</p>
+            
+            <div class="boxes-container" id="boxes-container"></div>
+            
+            <div id="product-reveal" class="product-reveal hidden">
+                <div class="product-image-container">
+                    <img id="product-image" class="product-image" alt="Prize product">
+                </div>
+                <div id="product-name" class="product-name"></div>
+                <div id="product-description" class="product-description"></div>
+            </div>
+            
+            <button id="reset-btn">Try Again</button>
+            
+            <div class="admin-panel">
+                <div class="admin-title">Admin Controls</div>
+                <button id="export-btn">Export Data to CSV</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const formSection = document.getElementById('form-section');
+            const resultSection = document.getElementById('result-section');
+            const generateBtn = document.getElementById('generate-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const exportBtn = document.getElementById('export-btn');
+            const nameInput = document.getElementById('name');
+            const phoneInput = document.getElementById('phone');
+            const nameError = document.getElementById('name-error');
+            const phoneError = document.getElementById('phone-error');
+            const displayName = document.getElementById('display-name');
+            const displayPhone = document.getElementById('display-phone');
+            const randomNumberDisplay = document.getElementById('random-number');
+            const boxesContainer = document.getElementById('boxes-container');
+            const productReveal = document.getElementById('product-reveal');
+            const productImage = document.getElementById('product-image');
+            const productName = document.getElementById('product-name');
+            const productDescription = document.getElementById('product-description');
+            const confettiContainer = document.getElementById('confetti-container');
+            
+            // Store collected data
+            let userData = [];
+            
+            // Define products with better descriptions
+            const products = [
+                {
+                    name: "Premium Bluetooth Headphones",
+                    description: "Experience immersive sound with our premium noise-cancelling headphones. Perfect for music lovers and professionals alike.",
+                    image: "/api/placeholder/320/240"
+                },
+                {
+                    name: "Smart Fitness Watch",
+                    description: "Track your health metrics, receive notifications, and stay connected with this stylish and feature-packed smartwatch.",
+                    image: "/api/placeholder/320/240"
+                },
+                {
+                    name: "Portable Bluetooth Speaker",
+                    description: "Take your music anywhere with this waterproof, rugged speaker offering 20 hours of playtime and crystal-clear sound.",
+                    image: "/api/placeholder/320/240"
+                },
+                {
+                    name: "True Wireless Earbuds",
+                    description: "Enjoy wireless freedom with these comfortable earbuds featuring touch controls and a compact charging case.",
+                    image: "/api/placeholder/320/240"
+                },
+                {
+                    name: "20,000mAh Power Bank",
+                    description: "Keep all your devices charged on the go with this high-capacity power bank featuring fast charging technology.",
+                    image: "/api/placeholder/320/240"
+                }
+            ];
+            
+            // Phone number validation
+            phoneInput.addEventListener('input', function(e) {
+                // Remove non-digits
+                this.value = this.value.replace(/\D/g, '');
+                
+                // Check if exactly 10 digits
+                validatePhoneNumber();
+            });
+            
+            function validatePhoneNumber() {
+                if (phoneInput.value.length !== 10) {
+                    phoneInput.classList.add('input-error');
+                    phoneError.style.display = 'block';
+                    return false;
+                } else {
+                    phoneInput.classList.remove('input-error');
+                    phoneError.style.display = 'none';
+                    return true;
+                }
+            }
+            
+            function validateName() {
+                if (!nameInput.value.trim()) {
+                    nameInput.classList.add('input-error');
+                    nameError.style.display = 'block';
+                    return false;
+                } else {
+                    nameInput.classList.remove('input-error');
+                    nameError.style.display = 'none';
+                    return true;
+                }
+            }
+            
+            nameInput.addEventListener('input', validateName);
+            
+            // Handle form submission
+            generateBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const isNameValid = validateName();
+                const isPhoneValid = validatePhoneNumber();
+                
+                if (!isNameValid || !isPhoneValid) {
+                    return;
+                }
+                
+                // Format phone with hyphens for display (but keep original for data)
+                const phoneFormatted = phoneInput.value.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3");
+                
+                // Display user info
+                displayName.textContent = nameInput.value;
+                displayPhone.textContent = phoneFormatted;
+                
+                // Generate random number between 1-10
+                const randomNumber = Math.floor(Math.random() * 10) + 1;
+                randomNumberDisplay.textContent = `Your Lucky Number: ${randomNumber}`;
+                
+                // Save data
+                const timestamp = new Date().toLocaleString();
+                userData.push({
+                    timestamp: timestamp,
+                    name: nameInput.value,
+                    phone: phoneInput.value,
+                    luckyNumber: randomNumber
+                });
+                
+                // Create 10 boxes
+                boxesContainer.innerHTML = '';
+                for (let i = 1; i <= 10; i++) {
+                    const box = document.createElement('div');
+                    box.className = 'box';
+                    box.textContent = i;
+                    box.dataset.number = i;
+                    
+                    box.addEventListener('click', function() {
+                        // Mark this box as selected
+                        document.querySelectorAll('.box').forEach(b => b.classList.remove('selected'));
+                        box.classList.add('selected');
+                        
+                        // Check if this is the lucky number
+                        if (parseInt(box.dataset.number) === randomNumber) {
+                            // Select a random product
+                            const randomProduct = products[Math.floor(Math.random() * products.length)];
+                            
+                            // Display the product
+                            productImage.src = randomProduct.image;
+                            productImage.alt = randomProduct.name;
+                            productName.textContent = randomProduct.name;
+                            productDescription.textContent = randomProduct.description;
+                            productReveal.classList.remove('hidden');
+                            
+                            // Update user data with prize
+                            const lastEntry = userData[userData.length - 1];
+                            lastEntry.prize = randomProduct.name;
+                            
+                            // Create confetti effect
+                            createConfetti();
+                        } else {
+                            // Hide product if wrong box is clicked
+                            productReveal.classList.add('hidden');
+                        }
+                    });
+                    
+                    boxesContainer.appendChild(box);
+                }
+                
+                // Switch to result section
+                formSection.classList.add('hidden');
+                resultSection.classList.remove('hidden');
+                productReveal.classList.add('hidden');
+            });
+            
+            // Reset everything
+            resetBtn.addEventListener('click', function() {
+                resultSection.classList.add('hidden');
+                formSection.classList.remove('hidden');
+                productReveal.classList.add('hidden');
+            });
+            
+            // Export data to CSV
+            exportBtn.addEventListener('click', function() {
+                if (userData.length === 0) {
+                    alert('No data to export yet.');
+                    return;
+                }
+                
+                let csvContent = "data:text/csv;charset=utf-8,";
+                
+                // Add headers
+                csvContent += "Timestamp,Name,Phone Number,Lucky Number,Prize\r\n";
+                
+                // Add data rows
+                userData.forEach(function(user) {
+                    csvContent += `${user.timestamp},${user.name},${user.phone},${user.luckyNumber},${user.prize || "Not revealed"}\r\n`;
+                });
+                
+                // Create download link
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "lucky_number_data.csv");
+                document.body.appendChild(link);
+                
+                // Download the data file
+                link.click();
+                document.body.removeChild(link);
+            });
+            
+            // Confetti effect
+            function createConfetti() {
+                confettiContainer.innerHTML = '';
+                const colors = ['#f72585', '#4361ee', '#4cc9f0', '#3f37c9', '#480ca8'];
+                
+                for (let i = 0; i < 150; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.top = -20 + 'px';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
+                    
+                    // Random size
+                    const size = Math.random() * 10 + 5;
+                    confetti.style.width = size + 'px';
+                    confetti.style.height = size + 'px';
+                    
+                    // Random shape
+                    const shapes = ['50%', '0%']; // circle or square
+                    confetti.style.borderRadius = shapes[Math.floor(Math.random() * shapes.length)];
+                    
+                    confettiContainer.appendChild(confetti);
+                    
+                    // Animation
+                    const animation = confetti.animate(
+                        [
+                            { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
+                            { transform: `translate(${Math.random() * 100 - 50}px, ${window.innerHeight}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                        ],
+                        {
+                            duration: Math.random() * 3000 + 2000,
+                            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                        }
+                    );
+                    
+                    animation.onfinish = () => confetti.remove();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
